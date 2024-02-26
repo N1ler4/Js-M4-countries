@@ -1,6 +1,7 @@
 "use strict";
 
 let cards = document.querySelector(".card-wrapper");
+let inputSearch = document.querySelector("#search");
 
 function getData() {
   let url = "https://restcountries.com/v2/all";
@@ -10,7 +11,7 @@ function getData() {
     .finally(() => console.log("done"));
 }
 
-function renderMovies(data, cards) {
+function renderCountries(data, cards) {
   if (data.length > 0) {
     data.forEach((el) => {
       const card = document.createElement("div");
@@ -26,27 +27,32 @@ function renderMovies(data, cards) {
       cards.append(card);
     });
   } else {
-    cards.html("<h1>No movies found</h1>");
+    cards.innerHTML = "<h1>No countries found</h1>";
   }
 }
 
 function searchFlags(data, searchWord) {
   data.then((el) =>
-    renderMovies(
+    renderCountries(
       el.filter((ele) => ele.name.toLowerCase().includes(searchWord)),
       cards
     )
   );
 }
 
-function sortOptionFlag(data, name) {
+function sortOptionFlag(data, regionName) {
   data.then((el) =>
-    renderMovies(
-      el.filter((ele) => ele.region.toLowerCase().includes(name)),
+    renderCountries(
+      el.filter((ele) => ele.region.toLowerCase().includes(regionName)),
       cards
     )
   );
 }
 
 const dataFlags = getData();
-dataFlags.then((data) => renderMovies(data, cards));
+dataFlags.then((data) => renderCountries(data, cards));
+
+inputSearch.addEventListener("keyup", (e) => {
+  cards.innerHTML = "";
+  searchFlags(dataFlags, e.target.value);
+});
